@@ -43,6 +43,7 @@ router.post("/signup", (req, res) => {
           email: body.email,
           password: hash,
           token: uid2(32),
+          descriptionProfile: body.descriptionProfile,
           inscriptionDate: new Date(), // Ajout de la date d'inscription
         });
         newProfileInfos.save();

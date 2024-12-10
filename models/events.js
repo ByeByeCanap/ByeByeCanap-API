@@ -19,6 +19,7 @@ const eventSchema = mongoose.Schema({
   theme: String,
   category: String,
   reference: String,
+  image : String,
 
   eventDate: Date,
   location: String,
