@@ -4,7 +4,10 @@ const profileInfosSchema = new mongoose.Schema({
   email: String,
   password: String,
   token: String,
-  descriptionProfile: String,
+  descriptionProfile: {
+    type: String,
+    required: false,
+  },
   inscriptionDate: Date,
 });
 
