@@ -11,11 +11,22 @@ const preferenceSchema = mongoose.Schema({
 
 // Creation eventschema
 const eventSchema = mongoose.Schema({
-  organiser: {
-    type: [mongoose.Schema.Types.ObjectId], // Array of ObjectId
-    ref: ["users", "organizations"],
-    default: null, // Specify the models it references
+  // organiser: {
+  //   type: [mongoose.Schema.Types.ObjectId], 
+  //   ref: ["users", "organizations"],
+  //   default: null, // Specify the models it references
+  // },
+  organizer: {
+    type: mongoose.Schema.Types.ObjectId, 
+    required: true,
   },
+  // Dans MongoDB:  l'option enum est utilisée pour spécifier une liste de valeurs autorisées pour un champ de votre schéma
+  organizerType: {
+    type: String,
+    enum: ['user', 'organization'], // Limit values to valid references
+    required: true,
+  },
+  title: String,
   theme: String,
   category: String,
   reference: String,
@@ -23,8 +34,9 @@ const eventSchema = mongoose.Schema({
 
   eventDate: Date,
   location: String,
-  minsizeGroup: Number,
-  maxsizeGroup: Number,
+  // minsizeGroup: Number,
+  //maxsizeGroup: Number,
+  sizeGroup: Number,
   preferences: [preferenceSchema],
 
   participants: [{ type: mongoose.Schema.Types.ObjectId, ref: "users" }],
