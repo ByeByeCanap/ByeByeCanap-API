@@ -7,76 +7,152 @@ const bcrypt = require("bcrypt");
 const uid2 = require("uid2");
 require("../models/connection");
 
-router.post("/signup", (req, res) => {
-  if (
-    !CheckBody(req.body, [
-      "nickName",
-      "email",
-      "password",
-      "lastName",
-      "firstName",
-      "birthdate",
-      "gender",
-    ])
-  ) {
-    res.json({
-      result: "Cannot create an user",
-      error: "Missing or empty fields",
+// Route Signup
+router.post("/signup", async (req, res) => {
+  const {
+    nickName,
+    email,
+    password,
+    lastName,
+    firstName,
+    birthdate,
+    gender,
+    themesInterest,
+    categoriesInterest,
+    themesSkill,
+    categoriesSkill,
+    motivations,
+    availability,
+    locationPreference,
+    preferredGroupType,
+    personalValues,
+    preferredPeople,
+    causes,
+    suggestions,
+  } = req.body; // Liste des champs obligatoires
+
+  const requiredFields = [
+    "nickName",
+    "email",
+    "password",
+    "lastName",
+    "firstName",
+  ]; // Vérification des champs obligatoires
+
+  if (!CheckBody(req.body, requiredFields)) {
+    return res.json({
+      result: "Cannot create a user",
+      error: "Missing required fields",
     });
-    return;
   }
 
-  User.findOne({ nickname: req.body.nickname, email: req.body.email }).then(
-    (data) => {
-      if (data === null) {
-        const hash = bcrypt.hashSync(req.body.password, 10);
-        const body = req.body;
-        const newUser = new User({
-          lastName: body.firstname,
-          firstName: body.firstName,
-          nickName: body.nickName,
-          birthdate: body.birthdate,
-          gender: body.gender,
-        });
-        newUser.save();
-        const newProfileInfos = new ProfileInfos({
-          email: body.email,
-          password: hash,
-          token: uid2(32),
-          descriptionProfile: body.descriptionProfile,
-          inscriptionDate: new Date(), // Ajout de la date d'inscription
-        });
-        newProfileInfos.save();
-        res.json({
-          result: "User has been successfully created",
-        });
-      } else {
-        res.json({
-          result: "Cannot create an user",
-          error:
-            "User with the same email adress or/and with the same Username already exist",
-        });
-      }
-    }
-  );
+  try {
+    // Vérification si l'utilisateur existe déjà
+    const existingUser = await User.findOne({ nickName });
+    if (existingUser) {
+      return res.json({
+        result: "Cannot create a user",
+        error: "Nickname already exists",
+      });
+    } // Hashage du mot de passe
+
+    const hashedPassword = bcrypt.hashSync(password, 10); // Création du document ProfileInfos
+
+    const newProfileInfos = new ProfileInfos({
+      email,
+      password: hashedPassword,
+      token: uid2(32),
+    });
+
+    const savedProfileInfos = await newProfileInfos.save(); // Préparation des champs optionnels avec des valeurs par défaut si vides
+
+    const userAspirations = {
+      themesInterest: themesInterest || [],
+      categoriesInterest: categoriesInterest || [],
+      themesSkill: themesSkill || [],
+      categoriesSkill: categoriesSkill || [],
+    };
+
+    const userAvailability = {
+      availability: availability || [],
+      locationPreference: locationPreference || null,
+    };
+
+    const userValues = {
+      preferredPeople: preferredPeople || [],
+      preferredGroupType: preferredGroupType || [],
+      personalValues: personalValues || [],
+      causes: causes || [],
+    }; // Création du document User
+
+    const newUser = new User({
+      lastName,
+      firstName,
+      nickName,
+      birthDate: birthdate,
+      gender,
+      aspirations: userAspirations,
+      motivations: motivations || null,
+      availability: userAvailability,
+      values: userValues,
+      suggestions: suggestions || null,
+      profileInfos: savedProfileInfos._id,
+    });
+
+    const savedUser = await newUser.save();
+
+    res.json({
+      result: "User has been successfully created",
+      userId: savedUser._id,
+    });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ result: "Cannot create a user", error: error.message });
+  }
 });
 
-router.post("/signin", (req, res) => {
+// Route Signin
+router.post("/signin", async (req, res) => {
+  const { email, password } = req.body; // Vérification des champs obligatoires pour connexion
+
   if (!CheckBody(req.body, ["email", "password"])) {
-    res.json({ result: "Connection failed", error: "Missing or empty fields" });
-    return;
+    return res.json({
+      result: "Connection failed",
+      error: "Missing required fields",
+    });
   }
 
-  ProfileInfos.findOne({ email: req.body.email }).then((data) => {
-    if (data && bcrypt.compareSync(req.body.password, data.password)) {
-      res.json({ result: data });
+  try {
+    // Recherche du profil d'authentification par email
+    const profile = await ProfileInfos.findOne({ email });
+
+    if (profile && bcrypt.compareSync(password, profile.password)) {
+      // Si le mot de passe est correct, récupération de l'utilisateur associé
+      const user = await User.findOne({ profileInfos: profile._id }).populate(
+        "profileInfos"
+      );
+
+      res.json({
+        result: "Connection successful",
+        token: profile.token,
+        userId: user._id,
+        user: {
+          nickName: user.nickName,
+          lastName: user.lastName,
+          firstName: user.firstName,
+          email: profile.email,
+        },
+      });
     } else {
       res.json({
         result: "Connection failed",
         error: "User not found or wrong password",
       });
     }
-  });
+  } catch (error) {
+    res.status(500).json({ result: "Connection failed", error: error.message });
+  }
 });
 
 module.exports = router;
