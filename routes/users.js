@@ -10,12 +10,12 @@ require("../models/connection");
 // Route Signup
 router.post("/signup", async (req, res) => {
     const {
-        nickName,
-        email,
-        password,
-        userType,
-        lastName,
         firstName,
+        lastName,
+        email,
+        nickName,
+        password,
+        userType, // reducer --> recupérer depuis la page UserTypeScreen
         birthdate,
         gender,
         themesInterest,
@@ -23,13 +23,14 @@ router.post("/signup", async (req, res) => {
         themesSkill,
         categoriesSkill,
         motivations,
+        preferredGroupType,
+        preferredPeople,
         availability,
         locationPreference,
-        preferredGroupType,
         personalValues,
-        preferredPeople,
         causes,
         suggestions,
+        descriptionProfile,
     } = req.body;
 
     // Check required fields
@@ -104,6 +105,8 @@ router.post("/signup", async (req, res) => {
             values: userValues,
             suggestions: suggestions || null,
             profileInfos: savedProfileInfos._id, // Link to ProfileInfos
+            descriptionProfile: descriptionProfile,
+
         });
 
         const savedUser = await newUser.save();
