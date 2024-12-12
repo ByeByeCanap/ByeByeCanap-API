@@ -1,13 +1,20 @@
 const mongoose = require("mongoose");
 
 const profileInfosSchema = new mongoose.Schema({
-  email: { type: String, required: true },
-  password: { type: String, required: true },
-  token: { type: String, required: true },
-  userType: { type: String, required: true },
-  descriptionProfile: { type: String, default: null },
-  inscriptionDate: { type: Date, default: Date.now },
-});
+  email: String,
+  password:  String,
+  token:  String,
+  userType:  String,
+  descriptionProfile:  String,
+  inscriptionDate: Date,
+  users: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "users",
+    },
+},
+{collection : "profileInfos" }
+);
+
 
 const ProfileInfos = mongoose.model("profileInfos", profileInfosSchema);
 module.exports = ProfileInfos;
