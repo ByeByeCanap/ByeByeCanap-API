@@ -9,150 +9,165 @@ require("../models/connection");
 
 // Route Signup
 router.post("/signup", async (req, res) => {
-  const {
-    nickName,
-    email,
-    password,
-    lastName,
-    firstName,
-    birthdate,
-    gender,
-    themesInterest,
-    categoriesInterest,
-    themesSkill,
-    categoriesSkill,
-    motivations,
-    availability,
-    locationPreference,
-    preferredGroupType,
-    personalValues,
-    preferredPeople,
-    causes,
-    suggestions,
-  } = req.body; // Liste des champs obligatoires
+    const {
+        nickName,
+        email,
+        password,
+        userType,
+        lastName,
+        firstName,
+        birthdate,
+        gender,
+        themesInterest,
+        categoriesInterest,
+        themesSkill,
+        categoriesSkill,
+        motivations,
+        availability,
+        locationPreference,
+        preferredGroupType,
+        personalValues,
+        preferredPeople,
+        causes,
+        suggestions,
+    } = req.body;
 
-  const requiredFields = [
-    "nickName",
-    "email",
-    "password",
-    "lastName",
-    "firstName",
-  ]; // Vérification des champs obligatoires
+    // Check required fields
+    const requiredFields = [
+        "nickName",
+        "email",
+        "password",
+        "userType",
+        "lastName",
+        "firstName",
+    ];
+    if (!CheckBody(req.body, requiredFields)) {
+        return res.json({
+            result: "Cannot create a user",
+            error: "Missing required fields",
+        });
+    }
 
-  if (!CheckBody(req.body, requiredFields)) {
-    return res.json({
-      result: "Cannot create a user",
-      error: "Missing required fields",
-    });
-  }
+    try {
+        // Check if user already exists
+        const existingUser = await User.findOne({ nickName });
+        if (existingUser) {
+            return res.json({
+                result: "Cannot create a user",
+                error: "Nickname already exists",
+            });
+        }
 
-  try {
-    // Vérification si l'utilisateur existe déjà
-    const existingUser = await User.findOne({ nickName });
-    if (existingUser) {
-      return res.json({
-        result: "Cannot create a user",
-        error: "Nickname already exists",
-      });
-    } // Hashage du mot de passe
+        // Hash password
+        const hashedPassword = bcrypt.hashSync(password, 10);
 
-    const hashedPassword = bcrypt.hashSync(password, 10); // Création du document ProfileInfos
+        // Create ProfileInfos
+        const newProfileInfos = new ProfileInfos({
+            email,
+            password: hashedPassword,
+            userType,
+            token: uid2(32),
+        });
 
-    const newProfileInfos = new ProfileInfos({
-      email,
-      password: hashedPassword,
-      token: uid2(32),
-    });
+        const savedProfileInfos = await newProfileInfos.save();
 
-    const savedProfileInfos = await newProfileInfos.save(); // Préparation des champs optionnels avec des valeurs par défaut si vides
+        // Create User and link ProfileInfos
 
-    const userAspirations = {
-      themesInterest: themesInterest || [],
-      categoriesInterest: categoriesInterest || [],
-      themesSkill: themesSkill || [],
-      categoriesSkill: categoriesSkill || [],
-    };
+        const userAspirations = {
+            themesInterest: themesInterest || [],
+            categoriesInterest: categoriesInterest || [],
+            themesSkill: themesSkill || [],
+            categoriesSkill: categoriesSkill || [],
+        };
 
-    const userAvailability = {
-      availability: availability || [],
-      locationPreference: locationPreference || null,
-    };
+        const userAvailability = {
+            availability: availability || [],
+            locationPreference: locationPreference || null,
+        };
 
-    const userValues = {
-      preferredPeople: preferredPeople || [],
-      preferredGroupType: preferredGroupType || [],
-      personalValues: personalValues || [],
-      causes: causes || [],
-    }; // Création du document User
+        const userValues = {
+            preferredPeople: preferredPeople || [],
+            preferredGroupType: preferredGroupType || [],
+            personalValues: personalValues || [],
+            causes: causes || [],
+        };
 
-    const newUser = new User({
-      lastName,
-      firstName,
-      nickName,
-      birthDate: birthdate,
-      gender,
-      aspirations: userAspirations,
-      motivations: motivations || null,
-      availability: userAvailability,
-      values: userValues,
-      suggestions: suggestions || null,
-      profileInfos: savedProfileInfos._id,
-    });
+        const newUser = new User({
+            lastName,
+            firstName,
+            nickName,
+            birthDate: birthdate,
+            gender,
+            aspirations: userAspirations,
+            motivations: motivations || null,
+            availability: userAvailability,
+            values: userValues,
+            suggestions: suggestions || null,
+            profileInfos: savedProfileInfos._id, // Link to ProfileInfos
+        });
 
-    const savedUser = await newUser.save();
+        const savedUser = await newUser.save();
 
-    res.json({
-      result: "User has been successfully created",
-      userId: savedUser._id,
-    });
-  } catch (error) {
-    res
-      .status(500)
-      .json({ result: "Cannot create a user", error: error.message });
-  }
+        // Update ProfileInfos to link back to User
+        savedProfileInfos.users = savedUser._id;
+        await savedProfileInfos.save();
+
+        res.json({
+            result: "User has been successfully created",
+            userId: savedUser._id,
+        });
+    } catch (error) {
+        res.status(500).json({
+            result: "Cannot create a user",
+            error: error.message,
+        });
+    }
 });
 
 // Route Signin
 router.post("/signin", async (req, res) => {
-  const { email, password } = req.body; // Vérification des champs obligatoires pour connexion
+    const { email, password } = req.body; // Vérification des champs obligatoires pour connexion
 
-  if (!CheckBody(req.body, ["email", "password"])) {
-    return res.json({
-      result: "Connection failed",
-      error: "Missing required fields",
-    });
-  }
-
-  try {
-    // Recherche du profil d'authentification par email
-    const profile = await ProfileInfos.findOne({ email });
-
-    if (profile && bcrypt.compareSync(password, profile.password)) {
-      // Si le mot de passe est correct, récupération de l'utilisateur associé
-      const user = await User.findOne({ profileInfos: profile._id }).populate(
-        "profileInfos"
-      );
-
-      res.json({
-        result: "Connection successful",
-        token: profile.token,
-        userId: user._id,
-        user: {
-          nickName: user.nickName,
-          lastName: user.lastName,
-          firstName: user.firstName,
-          email: profile.email,
-        },
-      });
-    } else {
-      res.json({
-        result: "Connection failed",
-        error: "User not found or wrong password",
-      });
+    if (!CheckBody(req.body, ["email", "password"])) {
+        return res.json({
+            result: "Connection failed",
+            error: "Missing required fields",
+        });
     }
-  } catch (error) {
-    res.status(500).json({ result: "Connection failed", error: error.message });
-  }
+
+    try {
+        // Recherche du profil d'authentification par email
+        const profile = await ProfileInfos.findOne({ email });
+
+        if (profile && bcrypt.compareSync(password, profile.password)) {
+            // Si le mot de passe est correct, récupération de l'utilisateur associé
+            const user = await User.findOne({
+                profileInfos: profile._id,
+            }).populate("profileInfos");
+
+            res.json({
+                result: "Connection successful",
+                token: profile.token,
+                userId: user._id,
+                user: {
+                    nickName: user.nickName,
+                    lastName: user.lastName,
+                    firstName: user.firstName,
+                    email: profile.email,
+                },
+            });
+        } else {
+            res.json({
+                result: "Connection failed",
+                error: "User not found or wrong password",
+            });
+        }
+    } catch (error) {
+        res.status(500).json({
+            result: "Connection failed",
+            error: error.message,
+        });
+    }
 });
 
 module.exports = router;
