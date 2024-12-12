@@ -28,6 +28,7 @@ const userSchema = mongoose.Schema({
   lastName: { type: String, required: true },
   firstName: { type: String, required: true },
   nickName: { type: String, required: true, unique: true },
+
   birthDate: { type: String },
   gender: { type: String }, // Informations supp
 
@@ -42,10 +43,9 @@ const userSchema = mongoose.Schema({
   isProfileChecked: { type: Boolean, default: false }, // Lien vers les informations d'authentification
 
   profileInfos: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "profileInfos",
-    required: true,
-  },
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "profileInfos",
+    },
 });
 
 const User = mongoose.model("users", userSchema);
