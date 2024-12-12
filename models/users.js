@@ -28,7 +28,7 @@ const userSchema = mongoose.Schema({
   lastName: { type: String, required: true },
   firstName: { type: String, required: true },
   nickName: { type: String, required: true, unique: true },
-  birthDate: { type: Date },
+  birthDate: { type: String },
   gender: { type: String }, // Informations supp
 
   avatar: { type: String, default: null },
@@ -37,6 +37,7 @@ const userSchema = mongoose.Schema({
   availability: { type: availabilitySchema, default: {} },
   values: { type: valuesSchema, default: {} },
   suggestions: { type: String, default: null }, // Vérification profil
+  descriptionProfile: { type: String, default: null },
 
   isProfileChecked: { type: Boolean, default: false }, // Lien vers les informations d'authentification
 
