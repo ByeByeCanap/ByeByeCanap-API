@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const organizationsSchema = mongoose.Schema({
+const organizationSchema = mongoose.Schema({
   // Global Infos
   organizationName: String,
   organizationAddress: String,
@@ -20,11 +20,11 @@ const organizationsSchema = mongoose.Schema({
 
   // Profile infos
   profileInfos: {
-    type: [mongoose.Schema.Types.ObjectId], // Array of ObjectId
-    ref: ["profileInfos"],
-  },
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "profileInfos",
+    },
 });
 
-const Organization = mongoose.model("organizations", organizationsSchema);
+const Organization = mongoose.model("organizations", organizationSchema);
 
 module.exports = Organization;
