@@ -16,7 +16,7 @@ router.post("/signup", async (req, res) => {
         nickName,
         password,
         userType, // reducer --> recupérer depuis la page UserTypeScreen
-        birthdate,
+        birthDate,
         gender,
         themesInterest,
         categoriesInterest,
@@ -33,6 +33,8 @@ router.post("/signup", async (req, res) => {
         descriptionProfile,
     } = req.body;
 
+    console.log("look at req.body", req.body);
+    
     // Check required fields
     const requiredFields = [
         "nickName",
@@ -41,8 +43,11 @@ router.post("/signup", async (req, res) => {
         "userType",
         "lastName",
         "firstName",
+        "birthDate",
+        "gender",
     ];
     if (!CheckBody(req.body, requiredFields)) {
+        //const emptyField = requiredFields.value
         return res.json({
             result: "Cannot create a user",
             error: "Missing required fields",
@@ -97,7 +102,7 @@ router.post("/signup", async (req, res) => {
             lastName,
             firstName,
             nickName,
-            birthDate: birthdate,
+            birthDate: birthDate,
             gender,
             aspirations: userAspirations,
             motivations: motivations || null,
@@ -106,7 +111,6 @@ router.post("/signup", async (req, res) => {
             suggestions: suggestions || null,
             profileInfos: savedProfileInfos._id, // Link to ProfileInfos
             descriptionProfile: descriptionProfile,
-
         });
 
         const savedUser = await newUser.save();
