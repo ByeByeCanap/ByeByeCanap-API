@@ -4,14 +4,14 @@ const mongoose = require("mongoose");
 // 2- Créer schema
 // Creation sous-document preferenceSchema to be attached to eventscheman
 const preferenceSchema = mongoose.Schema({
-  age: Number,
+  age: String,
   gender: String,
   other: String,
 });
 
 // Creation eventschema
 const eventSchema = mongoose.Schema({
-    profileInfos: {
+  profileInfos: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "profileInfos",
     },

@@ -12,9 +12,9 @@ const profileInfosSchema = new mongoose.Schema({
       ref: "users",
     },
 },
-{collection : "profileInfos" }
+//{collection : "profileInfos" }
 );
 
+const ProfileInfos = mongoose.model("profileinfos", profileInfosSchema);
 
-const ProfileInfos = mongoose.model("profileInfos", profileInfosSchema);
 module.exports = ProfileInfos;
