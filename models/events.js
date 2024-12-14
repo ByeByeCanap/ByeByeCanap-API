@@ -11,7 +11,7 @@ const preferenceSchema = mongoose.Schema({
 
 // Creation eventschema
 const eventSchema = mongoose.Schema({
-  profileInfos: {
+  organizer: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "profileInfos",
     },
