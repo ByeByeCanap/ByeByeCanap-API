@@ -160,7 +160,7 @@ router.get("/byLocation/:location", (req, res) => {
         .populate("organizer", "participants")
         .then((data) => {
             if (data.length > 0) {
-                res.json({ data });
+                res.json(data);
             } else {
                 res.status(404).json({
                     message: "Event not found",
@@ -175,7 +175,7 @@ router.get("/bySizeGroup/:sizeGroup", (req, res) => {
         .populate("organizer", "participants")
         .then((data) => {
             if (data.length > 0) {
-                res.json({ data });
+                res.json(data);
             } else {
                 res.status(404).json({
                     message: "Event not found",
@@ -192,7 +192,7 @@ router.get("/byTheme/:theme", (req, res) => {
         .populate("organizer", "participants")
         .then((data) => {
             if (data.length > 0) {
-                res.json({ data });
+                res.json(data);
             } else {
                 res.status(404).json({
                     message: "Event not found",
@@ -208,7 +208,7 @@ router.get("/byCategory/:category", (req, res) => {
         .populate("organizer", "participants")
         .then((data) => {
             if (data.length > 0) {
-                res.json({ data });
+                res.json(data);
             } else {
                 res.status(404).json({
                     message: "Event not found",
