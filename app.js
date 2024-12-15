@@ -1,21 +1,28 @@
-var express = require("express");
-var path = require("path");
-var cookieParser = require("cookie-parser");
-var logger = require("morgan");
+// Express and Cors import
+const express = require("express");
+const app = express();
+const cors = require("cors");
+
+// Dependency import
+const path = require("path");
+const cookieParser = require("cookie-parser");
+const logger = require("morgan");
+const swaggerUi = require("swagger-ui-express");
+const swaggerSpec = require("./configs/SwaggerConfig");
 require("dotenv").config();
-var indexRouter = require("./routes/index");
-var usersRouter = require("./routes/users");
-var eventsRouter = require("./routes/events");
 
-var app = express();
-const cors = require('cors');
+// Routes import
+const indexRouter = require("./routes/index");
+const usersRouter = require("./routes/users");
+const eventsRouter = require("./routes/events");
+
 app.use(cors());
-
 app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
+app.use("/doc/api", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
