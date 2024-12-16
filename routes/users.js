@@ -51,11 +51,13 @@ router.post("/signup", async (req, res) => {
 
   try {
     // Check if user already exists
-    const existingUser = await User.findOne({ nickName, email });
-    if (existingUser) {
+    const existingNickName = await User.findOne({ nickName });
+    const existingEmail = await profileinfos.findOne({ email });
+
+    if (existingNickName || existingEmail) {
       return res.json({
         result: "Cannot create a user",
-        error: "Nickname already exists",
+        error: "Nickname or email already used",
       });
     }
 
@@ -143,20 +145,11 @@ router.post("/signin", async (req, res) => {
 
     if (profile && bcrypt.compareSync(password, profile.password)) {
       // Si le mot de passe est correct, récupération de l'utilisateur associé
-      const user = await User.findOne({
-        profileinfos: profile._id,
-      }).populate("profileinfos");
 
       res.json({
         result: "Connection successful",
+        userType: profile.userType,
         token: profile.token,
-        userId: user._id,
-        user: {
-          nickName: user.nickName,
-          lastName: user.lastName,
-          firstName: user.firstName,
-          email: profile.email,
-        },
       });
     } else {
       res.json({
