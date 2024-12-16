@@ -23,7 +23,7 @@ router.post("/propositionEvent", (req, res) => {
             "sizeGroup",
             // "minSizeGroup",
             // "maxSizeGroup",
-            // "preferences", foreign key
+            "preferences", 
         ])
     ) {
         res.json({
@@ -54,13 +54,16 @@ router.post("/propositionEvent", (req, res) => {
                 // maxsizeGroup,
                 sizeGroup,
                 description,
-                preferencesId, // S'assurer que preferencesId existe
+                preferences, // S'assurer que preferencesId existe
                 // participants, // foreign key: s'ajoute au fur et à mesure que les personnes s'inscrivent
             } = req.body;
 
+            console.log(req.body);
+            
+
             // Push (creation + save) event into events collection
             const newEvent = new Event({
-                profileInfos: profileInfosId, // Foreign key
+                organizer: profileInfosId, // Foreign key
                 title,
                 theme,
                 category,
@@ -72,14 +75,14 @@ router.post("/propositionEvent", (req, res) => {
                 //maxsizeGroup,
                 sizeGroup,
                 description,
-                preferences: preferencesId, // foreign Key
+                preferences:  {age: preferences.age, gender: preferences.gender, preferences: preferences.other} , 
                 participants: [],
                 isFinished: false,
             });
 
             newEvent
                 .save()
-                .then(() => {
+                .then((data) => {
                     res.json({
                         result: "Event has been successfully created",
                         //eventId: newEvent._id, // Retourner l'ID de l'événement
@@ -106,7 +109,7 @@ router.post("/propositionEvent", (req, res) => {
 // except events that are already done !
 router.get("/allEvents", (req, res) => {
     Event.find()
-        .populate("organizer", "participants")
+        //.populate("organizer", "participants")
         .then((data) => {
             if (data === null) {
                 res.json({
