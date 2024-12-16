@@ -113,12 +113,14 @@ router.post("/signup", async (req, res) => {
     const savedUser = await newUser.save();
 
     // Update profileinfos to link back to User
-    savedprofileinfos.users = savedUser._id;
-    await savedprofileinfos.save();
+    await savedprofileinfos.save({ users: savedUser._id });
 
-    res.json({
-      result: "User has been successfully created",
-      userId: savedUser._id,
+    profileinfos.findOne().then((data) => {
+      res.json({
+        result: "User has been successfully created",
+        id: data.users,
+        token: data.token,
+      });
     });
   } catch (error) {
     res.status(500).json({
