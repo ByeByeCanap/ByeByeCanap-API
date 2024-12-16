@@ -3,7 +3,7 @@ var router = express.Router();
 const { CheckBody } = require("../modules/checkbody");
 const Event = require("../models/events");
 //const User = require("../models/users");
-const ProfileInfos = require("../models/profileInfos");
+const profileinfos = require("../models/profileinfos");
 const User = require("../models/users");
 const Organization = require("../models/organizations");
 require("../models/connection");
@@ -34,13 +34,13 @@ router.post("/propositionEvent", (req, res) => {
     }
 
     // Event can be created into BBC DB only if user connexion is active ==> token + chercher user from the token
-    ProfileInfos.findOne({ token: req.body.token })
+    profileinfos.findOne({ token: req.body.token })
         .then((data) => {
             if (!data) {
                 return res.status(404).json({ error: "User not found" });
             }
 
-            const profileInfosId = data._id; //clé étrangère lié à une autre clé "ProfileInfos" where we can get the userType
+            const profileinfosId = data._id; //clé étrangère lié à une autre clé "ProfileInfos" where we can get the userType
 
             const {
                 title,
@@ -63,7 +63,7 @@ router.post("/propositionEvent", (req, res) => {
 
             // Push (creation + save) event into events collection
             const newEvent = new Event({
-                organizer: profileInfosId, // Foreign key
+                organizer: profileinfosId, // Foreign key
                 title,
                 theme,
                 category,
