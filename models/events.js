@@ -12,15 +12,15 @@ const preferenceSchema = mongoose.Schema({
 // Creation eventschema
 const eventSchema = mongoose.Schema({
   organizer: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "profileInfos",
-    },
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "profileinfos",
+  },
 
   title: String,
   theme: String,
   category: String,
   reference: String,
-  image : String,
+  image: String,
 
   eventDate: Date,
   location: String,

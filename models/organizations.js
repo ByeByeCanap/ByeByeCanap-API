@@ -19,10 +19,10 @@ const organizationSchema = mongoose.Schema({
   hasSubscribed: Boolean,
 
   // Profile infos
-  profileInfos: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "profileInfos",
-    },
+  profileinfos: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "profileinfos",
+  },
 });
 
 const Organization = mongoose.model("organizations", organizationSchema);

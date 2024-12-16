@@ -42,10 +42,10 @@ const userSchema = mongoose.Schema({
 
   isProfileChecked: { type: Boolean, default: false }, // Lien vers les informations d'authentification
 
-  profileInfos: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "profileInfos",
-    },
+  profileinfos: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "profileinfos",
+  },
 });
 
 const User = mongoose.model("users", userSchema);
