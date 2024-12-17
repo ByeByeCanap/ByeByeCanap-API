@@ -11,26 +11,26 @@ require("../models/connection");
 // POST - when creating event via PropositionScreen ----------------------------------------------------------
 router.post("/createEvent", (req, res) => {
   // Fill all fields to be able to set matches later on
-  if (
-    !CheckBody(req.body, [
-      "title",
-      "theme",
-      "category",
-      //"image",  pas bloquant
-      "eventDate",
-      "location",
-      "sizeGroup",
-      // "minSizeGroup",
-      // "maxSizeGroup",
-      //"preferences", pas bloquant si pas de préférances et pas envie de remplir côté FRONT
-    ])
-  ) {
-    res.json({
-      message: "Cannot create any event",
-      error: "Missing or empty fields",
-    });
-    return;
-  }
+  // if (
+  //   !CheckBody(req.body, [
+  //     "title",
+  //     "theme",
+  //     "category",
+  //     //"image",  pas bloquant
+  //     "eventDate",
+  //     "location",
+  //     "sizeGroup",
+  //     // "minSizeGroup",
+  //     // "maxSizeGroup",
+  //     //"preferences", pas bloquant si pas de préférances et pas envie de remplir côté FRONT
+  //   ])
+  // ) {
+  //   res.json({
+  //     message: "Cannot create any event",
+  //     error: "Missing or empty fields",
+  //   });
+  //   return;
+  // }
   const token = req.headers.authorization;
   // Event can be created into BBC DB only if user connexion is active ==> token + chercher user from the token
   profileinfos
@@ -75,7 +75,7 @@ router.post("/createEvent", (req, res) => {
         sizeGroup,
         description,
         preferences: {
-          ageRange: req.body.age,
+          ageRange: req.body.ageRange,
           gender: req.body.gender,
           other: req.body.other,
         },
