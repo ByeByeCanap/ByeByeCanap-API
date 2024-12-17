@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-// Schéma pour les aspirations de l'utilisateur (sosus document)
+// Schéma pour les aspirations de l'utilisateur (sous document)
 const aspirationsSchema = mongoose.Schema({
   themesInterest: { type: [String], default: [] },
   categoriesInterest: { type: [String], default: [] },
