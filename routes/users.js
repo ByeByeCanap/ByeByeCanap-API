@@ -113,7 +113,8 @@ router.post("/signup", async (req, res) => {
     const savedUser = await newUser.save();
 
     // Update profileinfos to link back to User
-    await savedprofileinfos.save({ users: savedUser._id });
+    savedprofileinfos.users = savedUser._id;
+    await savedprofileinfos.save();
 
     profileinfos.findOne().then((data) => {
       res.json({
