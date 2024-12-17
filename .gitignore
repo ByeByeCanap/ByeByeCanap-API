@@ -62,3 +62,6 @@ typings/
 
 #Ignored test files
 *.test.js
+
+#Ignored JSON files data
+*.json

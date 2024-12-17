@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 // 2- Créer schema
 // Creation sous-document preferenceSchema to be attached to eventscheman
 const preferenceSchema = mongoose.Schema({
-  age: String,
+  ageRange: String,
   gender: String,
   other: String,
 });
@@ -21,12 +21,11 @@ const eventSchema = mongoose.Schema({
   category: String,
   reference: String,
   image: String,
-
   eventDate: Date,
   location: String,
   // minsizeGroup: Number,
   //maxsizeGroup: Number,
-  sizeGroup: Number,
+  sizeGroup: String,
   description: String,
   preferences: preferenceSchema,
 
