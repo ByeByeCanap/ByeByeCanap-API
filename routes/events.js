@@ -12,8 +12,7 @@ require("../models/connection");
 router.post("/propositionEvent", (req, res) => {
     // Fill all fields to be able to set matches later on
     if (
-        !CheckBody(req.body, [
-            "token",
+        !CheckBody(req.body, [   
             "title",
             "theme",
             "category",
@@ -23,7 +22,7 @@ router.post("/propositionEvent", (req, res) => {
             "sizeGroup",
             // "minSizeGroup",
             // "maxSizeGroup",
-            "preferences", 
+            //"preferences", pas bloquant si pas de préférances et pas envie de remplir côté FRONT 
         ])
     ) {
         res.json({
@@ -54,7 +53,7 @@ router.post("/propositionEvent", (req, res) => {
                 // maxsizeGroup,
                 sizeGroup,
                 description,
-                preferences, // S'assurer que preferencesId existe
+                //preferences, // S'assurer que preferencesId existe
                 // participants, // foreign key: s'ajoute au fur et à mesure que les personnes s'inscrivent
             } = req.body;
 
@@ -75,7 +74,10 @@ router.post("/propositionEvent", (req, res) => {
                 //maxsizeGroup,
                 sizeGroup,
                 description,
-                preferences:  {age: preferences.age, gender: preferences.gender, preferences: preferences.other} , 
+                preferences:  {
+                    age: "entre 30 et 30",
+                    gender: "femme",
+                    preferences: "gjkgjsij"}, 
                 participants: [],
                 isFinished: false,
             });
