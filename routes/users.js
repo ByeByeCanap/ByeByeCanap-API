@@ -168,4 +168,27 @@ router.post("/signin", async (req, res) => {
   }
 });
 
+// GET by token
+router.get("/:token", (req, res) => {
+  const token = req.params.token;
+
+  profileinfos
+    .findOne({ token: token })
+    .populate("users")
+    .then((data) => {
+      if (data) {
+        console.log("User found !");
+        console.log(data);
+        User.findOne({ _id: data.users }).then((userData) => {
+          console.log(userData);
+          res.json(userData);
+        });
+      } else {
+        res.status(404).json({
+          message: "User has not been found...retry pétasse !",
+        });
+      }
+    });
+});
+
 module.exports = router;
