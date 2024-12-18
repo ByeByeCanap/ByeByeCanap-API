@@ -121,6 +121,8 @@ router.get("/allEvents", (req, res) => {
                 message: "Event done",
             });
         } else if (!data.isFinished) {
+            console.log(data);
+            
             res.json({
                 message: "Here's the list of the events 👇",
                 result: data.filter((event) => event.isFinished !== true),
@@ -202,7 +204,7 @@ router.get("/byTheme/:theme", (req, res) => {
 router.get("/byCategory/:category", (req, res) => {
     const category = req.params.category;
     Event.find({ category: category, isFinished: false }).then((data) => {
-        if (data.length > 0) {
+        if (data) {
             res.json(data);
         } else {
             res.status(404).json({
@@ -210,6 +212,15 @@ router.get("/byCategory/:category", (req, res) => {
             });
         }
     });
+});
+
+// // Get by eventId
+router.get("/byEventId/:id", (req, res) => {
+    Event.findOne({_id: req.params.id}).then((foundEvent) => {
+        if(foundEvent){
+            res.json({message : "Event found", result: foundEvent})
+        }
+    })
 });
 
 // PUT : modify event only if you are the organizater (clé étrangère) ---------------------------------------
