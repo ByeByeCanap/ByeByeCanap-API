@@ -37,12 +37,20 @@ router.post("/createEvent", async (req, res) => {
     } = req.body;
 
     const requiredFields = [
-      "title, theme, category, eventDate, sizeGroup, description, adress, ageRange, gender",
+      "title",
+      "theme",
+      "category",
+      "eventDate",
+      "sizeGroup",
+      "description",
+      "adress",
+      "ageRange",
+      "gender",
     ];
 
     if (!CheckBody(req.body, requiredFields)) {
       return res.json({
-        result: "Cannot create a user",
+        result: "Cannot create an event",
         error: "Missing required fields",
       });
     }
@@ -190,25 +198,25 @@ router.get("/byTheme/:theme", (req, res) => {
 
 // // Get by category
 router.get("/byCategory/:category", (req, res) => {
-    const category = req.params.category;
-    Event.find({ category: category, isFinished: false }).then((data) => {
-        if (data) {
-            res.json(data);
-        } else {
-            res.status(404).json({
-                message: "Event not found",
-            });
-        }
-    });
+  const category = req.params.category;
+  Event.find({ category: category, isFinished: false }).then((data) => {
+    if (data) {
+      res.json(data);
+    } else {
+      res.status(404).json({
+        message: "Event not found",
+      });
+    }
+  });
 });
 
 // // Get by eventId
 router.get("/byEventId/:id", (req, res) => {
-    Event.findOne({_id: req.params.id}).then((foundEvent) => {
-        if(foundEvent){
-            res.json({message : "Event found", result: foundEvent})
-        }
-    })
+  Event.findOne({ _id: req.params.id }).then((foundEvent) => {
+    if (foundEvent) {
+      res.json({ message: "Event found", result: foundEvent });
+    }
+  });
 });
 
 // PUT : modify event only if you are the organizater (clé étrangère) ---------------------------------------
