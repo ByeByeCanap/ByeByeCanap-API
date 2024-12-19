@@ -9,6 +9,12 @@ const preferenceSchema = mongoose.Schema({
   other: String,
 });
 
+const locationSchema = mongoose.Schema({
+  adress: String,
+  latitude: Number,
+  longitude: Number,
+});
+
 // Creation eventschema
 const eventSchema = mongoose.Schema({
   organizer: {
@@ -22,7 +28,7 @@ const eventSchema = mongoose.Schema({
   reference: String,
   image: String,
   eventDate: Date,
-  location: String,
+  location: locationSchema,
   // minsizeGroup: Number,
   //maxsizeGroup: Number,
   sizeGroup: String,
