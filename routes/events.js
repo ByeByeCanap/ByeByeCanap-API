@@ -218,7 +218,13 @@ router.get("/byCategory/:category", (req, res) => {
 router.get("/byEventId/:id", (req, res) => {
     Event.findOne({_id: req.params.id}).then((foundEvent) => {
         if(foundEvent){
-            res.json({message : "Event found", result: foundEvent})
+            console.log(foundEvent);
+            
+            res.json({message : "Event found", result: foundEvent});
+        } else {
+            res.status(404).json({
+                message: "Event not found",
+            });
         }
     })
 });
