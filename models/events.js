@@ -11,6 +11,7 @@ const preferenceSchema = mongoose.Schema({
 
 const locationSchema = mongoose.Schema({
   adress: String,
+  zipcode: Number,
   latitude: Number,
   longitude: Number,
 });

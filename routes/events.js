@@ -31,6 +31,7 @@ router.post("/createEvent", async (req, res) => {
       sizeGroup,
       description,
       adress,
+      zipcode,
       ageRange,
       gender,
       other,
@@ -44,6 +45,7 @@ router.post("/createEvent", async (req, res) => {
       "sizeGroup",
       "description",
       "adress",
+      "zipcode",
       "ageRange",
       "gender",
     ];
@@ -56,12 +58,14 @@ router.post("/createEvent", async (req, res) => {
     }
 
     const response = await fetch(
-      `https://api-adresse.data.gouv.fr/search/?q=${adress}&limit=1`
+      `https://api-adresse.data.gouv.fr/search/?q=${adress}&postcode=${zipcode}`
     );
     const data = await response.json();
 
     if (!data.features.length) {
-      return res.status(404).json({ error: "Nothing has been found" });
+      return res.status(404).json({
+        error: "Your adress and your zipcode return nothing, try again ^_^",
+      });
     }
 
     const longitude = data.features[0].geometry.coordinates[0];
@@ -80,6 +84,7 @@ router.post("/createEvent", async (req, res) => {
       eventDate,
       location: {
         adress: adress,
+        zipcode: zipcode,
         latitude: latitude,
         longitude: longitude,
       },
