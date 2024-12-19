@@ -1,5 +1,5 @@
-var express = require("express");
-var router = express.Router();
+const express = require("express");
+const router = express.Router();
 const { CheckBody } = require("../modules/checkbody");
 const Event = require("../models/events");
 //const User = require("../models/users");
@@ -190,16 +190,25 @@ router.get("/byTheme/:theme", (req, res) => {
 
 // // Get by category
 router.get("/byCategory/:category", (req, res) => {
-  const category = req.params.category;
-  Event.find({ category: category, isFinished: false }).then((data) => {
-    if (data.length > 0) {
-      res.json(data);
-    } else {
-      res.status(404).json({
-        message: "Event not found",
-      });
-    }
-  });
+    const category = req.params.category;
+    Event.find({ category: category, isFinished: false }).then((data) => {
+        if (data) {
+            res.json(data);
+        } else {
+            res.status(404).json({
+                message: "Event not found",
+            });
+        }
+    });
+});
+
+// // Get by eventId
+router.get("/byEventId/:id", (req, res) => {
+    Event.findOne({_id: req.params.id}).then((foundEvent) => {
+        if(foundEvent){
+            res.json({message : "Event found", result: foundEvent})
+        }
+    })
 });
 
 // PUT : modify event only if you are the organizater (clé étrangère) ---------------------------------------
