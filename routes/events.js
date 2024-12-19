@@ -212,11 +212,17 @@ router.get("/byCategory/:category", (req, res) => {
 
 // // Get by eventId
 router.get("/byEventId/:id", (req, res) => {
-  Event.findOne({ _id: req.params.id }).then((foundEvent) => {
-    if (foundEvent) {
-      res.json({ message: "Event found", result: foundEvent });
-    }
-  });
+    Event.findOne({_id: req.params.id}).then((foundEvent) => {
+        if(foundEvent){
+            console.log(foundEvent);
+            
+            res.json({message : "Event found", result: foundEvent});
+        } else {
+            res.status(404).json({
+                message: "Event not found",
+            });
+        }
+    })
 });
 
 // PUT : modify event only if you are the organizater (clé étrangère) ---------------------------------------
