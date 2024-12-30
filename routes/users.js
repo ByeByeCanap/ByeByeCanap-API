@@ -185,7 +185,7 @@ router.get("/:token", (req, res) => {
         });
       } else {
         res.status(404).json({
-          message: "User has not been found...retry pétasse !",
+          message: "User has not been found !",
         });
       }
     });
