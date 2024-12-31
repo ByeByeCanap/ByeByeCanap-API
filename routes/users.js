@@ -43,9 +43,8 @@ router.post("/signup", async (req, res) => {
     "firstName",
   ];
   if (!CheckBody(req.body, requiredFields)) {
-    return res.json({
-      result: "Cannot create a user",
-      error: "Missing required fields",
+    return res.status(400).json({
+      result: "Cannot create an user, Missing or empty fields",
     });
   }
 
@@ -55,9 +54,9 @@ router.post("/signup", async (req, res) => {
     const existingEmail = await profileinfos.findOne({ email });
 
     if (existingNickName || existingEmail) {
-      return res.json({
-        result: "Cannot create a user",
-        error: "Nickname or email already used",
+      return res.status(409).json({
+        result:
+          "User with the same email address or/and with the same Username already exist",
       });
     }
 
@@ -117,7 +116,7 @@ router.post("/signup", async (req, res) => {
     await savedprofileinfos.save();
 
     profileinfos.findOne().then((data) => {
-      res.json({
+      res.status(200).json({
         result: "User has been successfully created",
         id: data.users,
         token: data.token,
@@ -136,9 +135,8 @@ router.post("/signin", async (req, res) => {
   const { email, password } = req.body; // Vérification des champs obligatoires pour connexion
 
   if (!CheckBody(req.body, ["email", "password"])) {
-    return res.json({
-      result: "Connection failed",
-      error: "Missing required fields",
+    return res.status(400).json({
+      result: "Connection failed, Missing or empty fields",
     });
   }
 
@@ -149,15 +147,14 @@ router.post("/signin", async (req, res) => {
     if (profile && bcrypt.compareSync(password, profile.password)) {
       // Si le mot de passe est correct, récupération de l'utilisateur associé
 
-      res.json({
+      res.status(200).json({
         result: "Connection successful",
         userType: profile.userType,
         token: profile.token,
       });
     } else {
-      res.json({
-        result: "Connection failed",
-        error: "User not found or wrong password",
+      res.status(401).json({
+        result: "Connection failed, User not found or wrong password",
       });
     }
   } catch (error) {
@@ -181,7 +178,7 @@ router.get("/:token", (req, res) => {
         console.log(data);
         User.findOne({ _id: data.users }).then((userData) => {
           console.log(userData);
-          res.json(userData);
+          res.status(200).json(userData);
         });
       } else {
         res.status(404).json({

@@ -16,7 +16,9 @@ router.post("/createEvent", async (req, res) => {
     const userData = await profileinfos.findOne({ token: token });
 
     if (!userData) {
-      return res.status(404).json({ error: "User not found" });
+      return res
+        .status(401)
+        .json({ error: "You can't create an event if you are not logged" });
     }
 
     const profileinfosId = userData._id;
@@ -51,9 +53,8 @@ router.post("/createEvent", async (req, res) => {
     ];
 
     if (!CheckBody(req.body, requiredFields)) {
-      return res.json({
-        result: "Cannot create an event",
-        error: "Missing required fields",
+      return res.status(400).json({
+        result: "Cannot create an event, Missing required fields",
       });
     }
 
@@ -64,15 +65,16 @@ router.post("/createEvent", async (req, res) => {
 
     if (!data.features.length) {
       return res.status(404).json({
-        error: "Your adress and your zipcode return nothing, try again ^_^",
+        error:
+          "Your zipcode and adress are maybe wrong please try to edit your locations informations",
       });
     }
 
     const longitude = data.features[0].geometry.coordinates[0];
     const latitude = data.features[0].geometry.coordinates[1];
 
-    console.log("Longitude :", longitude);
-    console.log("Latitude :", latitude);
+    // console.log("Longitude :", longitude);
+    // console.log("Latitude :", latitude);
 
     const newEvent = new Event({
       organizer: profileinfosId,
@@ -113,23 +115,43 @@ router.post("/createEvent", async (req, res) => {
 
 // GET all events to display them within SearchEventsScreen -------------------------------------------------
 // except events that are already done !
-router.get("/allEvents", (req, res) => {
-  Event.find().then((data) => {
-    if (data === null) {
-      res.json({
-        message: "Event not found",
-      });
-    } else if (data.isFinished) {
-      res.json({
-        message: "Event done",
-      });
-    } else if (!data.isFinished) {
-      res.json({
-        message: "Here's the list of the events 👇",
-        result: data.filter((event) => event.isFinished !== true),
+router.get("/allEvents", async (req, res) => {
+  const token = req.headers.authorization;
+
+  if (!token) {
+    return res.status(401).json({
+      message: "You can't see the current event if you are not logged",
+    });
+  }
+
+  try {
+    const userData = await profileinfos.findOne({ token: token });
+
+    if (!userData) {
+      return res.status(401).json({
+        message: "You can't see the current event if you are not logged",
       });
     }
-  });
+
+    const events = await Event.find({ isFinished: false });
+
+    if (!events.length) {
+      return res.status(404).json({
+        message: "Event not found",
+      });
+    }
+
+    res.status(200).json({
+      message: "Here's the list of the events 👇",
+      result: events,
+    });
+  } catch (error) {
+    console.error("Error fetching events:", error);
+    res.status(500).json({
+      message: "Server error, please try later.",
+      error: error.message,
+    });
+  }
 });
 
 // GET by using filter in front ---------------------------------------------------------------------
@@ -286,13 +308,12 @@ router.put("/participantEvent", (req, res) => {
 });
 
 // DELETEONE only if organizer
-// From Locapic Part 4 Challenge
 router.delete("/deleteById/:id", (req, res) => {
   Event.deleteOne({ _id: req.params.id }).then((deletedEvent) => {
     if (deletedEvent.deletedCount > 0) {
-      res.json({ message: "Event has been deleted ✅" });
+      res.status(200).json({ message: "Event has been deleted ✅" });
     } else {
-      res.json({ message: "Oof, we didn't find your events 🥹" });
+      res.status(404).json({ message: "Oof, we didn't find your events 🥹" });
     }
   });
 });
