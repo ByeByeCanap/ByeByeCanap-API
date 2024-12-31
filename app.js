@@ -22,7 +22,15 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
-app.use("/doc/api", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use(
+  "/doc/api",
+  (req, res, next) => {
+    console.log(`Swagger UI requested: ${req.url}`);
+    next();
+  },
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerSpec)
+);
 
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
