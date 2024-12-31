@@ -7,9 +7,8 @@ const cors = require("cors");
 const path = require("path");
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
-const { swaggerSpec, swaggerUi } = require("./configs/SwaggerConfig");
-const CSS_URL =
-  "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.1.0/swagger-ui.min.css";
+const swaggerUi = require("swagger-ui-express");
+const swaggerSpec = require("./configs/SwaggerConfig");
 require("dotenv").config();
 
 // Routes import
@@ -23,11 +22,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
-app.use(
-  "/doc/api",
-  swaggerUi.serve,
-  swaggerUi.setup(swaggerSpec, { customCssUrl: CSS_URL })
-);
+app.use("/doc/api", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
