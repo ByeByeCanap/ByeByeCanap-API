@@ -7,20 +7,20 @@ const options = {
       title: "Bye Bye Canap 🛋️",
       version: "v1.0",
       description: `
-      📱 **API Documentation for Bye Bye Canap**  
+      📱 API Documentation for Bye Bye Canap  
       
-      Bienvenue sur la documentation de l'API de **Bye Bye Canap**, l'application mobile qui facilite les rencontres ! 👫🌟  
+      Bienvenue sur la documentation de l'API de Bye Bye Canap, l'application mobile qui facilite les rencontres ! 👫🌟  
       
       Utilisez cette documentation pour explorer les différentes fonctionnalités disponibles et intégrer l'API facilement.  
       
-      **Fonctionnalités principales :**  
+      Fonctionnalités principales :
       - 🔒 Authentification sécurisée via UID2  
       - 👤 Gestion des profils utilisateurs 
       - 🥳 Gestion de évènements
       - 📅 Disponibilité et préférences de rencontres  
       - 🎯 Suggestions personnalisées  
 
-      *N'hésitez pas à explorer les différentes routes et tester les requêtes directement depuis cette page !* 🚀  
+      N'hésitez pas à explorer les différentes routes et tester les requêtes directement depuis cette page ! 🚀  
       `,
     },
     components: {
@@ -28,10 +28,15 @@ const options = {
         uid2Auth: {
           type: "apiKey",
           in: "header",
-          name: "Authorization",
+          name: "authorization",
           description: "UID2 token for API authentication 🔑",
         },
       },
+      security: [
+        {
+          uid2Auth: [],
+        },
+      ],
     },
     tags: [
       {
