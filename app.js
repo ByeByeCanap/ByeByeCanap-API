@@ -7,8 +7,7 @@ const cors = require("cors");
 const path = require("path");
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
-const swaggerUi = require("swagger-ui-express");
-const swaggerSpec = require("./configs/SwaggerConfig");
+const { swaggerSpec, swaggerUi } = require("./configs/SwaggerConfig");
 require("dotenv").config();
 
 // Routes import
